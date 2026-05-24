@@ -1,4 +1,5 @@
 ♻️ EcoAI: AI-Driven E-Waste Collection System
+
 Smart • Sustainable • AI-Powered Recycling
 An intelligent AI-powered platform that simplifies electronic waste collection, classification, scheduling, and route optimization for efficient and eco-friendly recycling.
 
