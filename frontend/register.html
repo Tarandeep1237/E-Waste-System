@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register - EcoAI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <nav class="glass-panel">
+        <div class="nav-brand">
+            <i class="fa-solid fa-leaf" style="color: var(--success);"></i>
+            <span class="gradient-text">EcoAI</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+        </div>
+    </nav>
+
+    <div class="auth-container">
+        <!-- Login Form -->
+        <div class="glass-panel auth-card" id="loginCard">
+            <h2><span class="gradient-text">Welcome</span> Back</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" class="form-control" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+            </form>
+            <div class="switch-auth">
+                Don't have an account? <a href="#" id="showRegister">Sign Up</a>
+            </div>
+        </div>
+
+        <!-- Register Form -->
+        <div class="glass-panel auth-card" id="registerCard" style="display: none;">
+            <h2>Create <span class="gradient-text">Account</span></h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" class="form-control" id="regName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" class="form-control" id="regEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" id="regPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
+            </form>
+            <div class="switch-auth">
+                Already have an account? <a href="#" id="showLogin">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-area"></div>
+    <script src="static/js/main.js"></script>
+    <script>
+        // Simple toggle logic for the auth forms
+        document.getElementById('showRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('loginCard').style.display = 'none';
+            document.getElementById('registerCard').style.display = 'block';
+        });
+
+        document.getElementById('showLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('registerCard').style.display = 'none';
+            document.getElementById('loginCard').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

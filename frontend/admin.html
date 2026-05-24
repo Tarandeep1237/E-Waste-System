@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - EcoAI</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="nav-brand">
+                <i class="fa-solid fa-shield-halved" style="color: var(--danger);"></i>
+                <span class="gradient-text">Admin</span>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="#bookingsTable"><i class="fa-solid fa-list-check"></i> Bookings</a></li>
+                <li style="margin-top: auto; padding-top: 2rem;"><a href="#" id="logoutBtn" style="color: var(--danger);"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-content">
+            <div class="dashboard-header">
+                <h2>Overview <span class="gradient-text">Analytics</span></h2>
+                <div class="badge collected">Live Status: Active</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="glass-panel stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-truck"></i></div>
+                    <div class="stat-details">
+                        <h3 id="totalPickups">0</h3>
+                        <p>Total Pickups</p>
+                    </div>
+                </div>
+                <div class="glass-panel stat-card">
+                    <div class="stat-icon" style="color: var(--warning); background: rgba(245, 158, 11, 0.15); box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.1);"><i class="fa-solid fa-hourglass-half"></i></div>
+                    <div class="stat-details">
+                        <h3 id="pendingApprovals">0</h3>
+                        <p>Pending Approvals</p>
+                    </div>
+                </div>
+                <div class="glass-panel stat-card">
+                    <div class="stat-icon" style="color: var(--success); background: rgba(0, 242, 254, 0.15); box-shadow: inset 0 0 20px rgba(0, 242, 254, 0.1);"><i class="fa-solid fa-coins"></i></div>
+                    <div class="stat-details">
+                        <h3 id="pointsDistributed">0</h3>
+                        <p>Points Distributed</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <!-- Chart -->
+                <div class="glass-panel chart-card">
+                    <h3 style="margin-bottom: 1.5rem;">E-Waste Categories</h3>
+                    <canvas id="categoryChart" style="max-height: 300px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Bookings Management Table -->
+            <div class="glass-panel card" id="bookingsTable" style="margin-top: 3rem;">
+                <div class="card-header" style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+                    <h2>Manage <span class="gradient-text">Bookings</span></h2>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Image</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminBookingsTable">
+                            <!-- Loaded dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="notification-area"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="static/js/admin.js"></script>
+</body>
+</html>

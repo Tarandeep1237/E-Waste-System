@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoAI - E-Waste Collection Platform</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <nav class="glass-panel">
+        <div class="nav-brand">
+            <i class="fa-solid fa-leaf" style="color: var(--success);"></i>
+            <span class="gradient-text">EcoAI</span>
+        </div>
+        <div class="nav-links">
+            <a href="#dashboard" class="auth-required">Dashboard</a>
+            <a href="#book" class="auth-required">Schedule Pickup</a>
+            <span id="userPoints" class="badge scheduled auth-required" style="display:none;"><i class="fa-solid fa-coins"></i> 0 Points</span>
+            <a href="register.html" class="btn btn-outline" id="navLoginBtn">Login / Sign Up</a>
+            <button class="btn btn-outline auth-required" id="logoutBtn" style="display:none;">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container auth-required" style="display:none;">
+        
+        <div class="hero-section">
+            <h1>Welcome back, <span id="userName" class="gradient-text">User</span></h1>
+            <p>Ready to responsibly recycle your E-Waste? Track your impact and earn rewards!</p>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="glass-panel card">
+            <div class="dashboard-grid">
+                <div class="glass-panel card stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-recycle"></i></div>
+                    <div class="stat-details">
+                        <h3 id="totalRecycled">0</h3>
+                        <p>Items Recycled</p>
+                    </div>
+                </div>
+                <div class="glass-panel card stat-card">
+                    <div class="stat-icon" style="color: var(--warning); background: rgba(245, 158, 11, 0.1);"><i class="fa-solid fa-clock"></i></div>
+                    <div class="stat-details">
+                        <h3 id="pendingPickups">0</h3>
+                        <p>Pending Pickups</p>
+                    </div>
+                </div>
+                <div class="glass-panel card stat-card">
+                    <div class="stat-icon" style="color: var(--success); background: rgba(34, 197, 94, 0.1);"><i class="fa-solid fa-star"></i></div>
+                    <div class="stat-details">
+                        <h3 id="rewardPoints">0</h3>
+                        <p>Total Rewards Earned</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking History -->
+            <h3 style="margin-top: 3rem;">Recent Bookings</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Category</th>
+                            <th>AI Confidence</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTableBody">
+                        <!-- Loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Schedule Pickup Section -->
+        <div id="book" class="glass-panel card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h2>Schedule a <span class="gradient-text">Pickup</span></h2>
+            </div>
+            
+            <form id="bookingForm">
+                <div class="dashboard-grid">
+                    <!-- Left: Upload & AI -->
+                    <div>
+                        <div class="form-group upload-container">
+                            <label>1. Upload E-Waste Image</label>
+                            <div class="upload-area" id="dropZone">
+                                <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                                <div class="upload-text">
+                                    <h3>Drag & Drop</h3>
+                                    <p>or click to select your e-waste image</p>
+                                </div>
+                                <input type="file" id="imageInput" accept="image/*" style="display:none;">
+                            </div>
+                            <center><img id="imagePreview" alt="Preview"></center>
+                            <div class="spinner" id="aiSpinner"></div>
+                        </div>
+
+                        <div id="aiResult" class="glass-panel card" style="display:none; margin-top: 1rem;">
+                            <h4>AI Classification Result</h4>
+                            <p>Category: <span id="aiCategory" class="badge scheduled"></span></p>
+                            <p style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-secondary);">Confidence: <span id="aiConfidence"></span>%</p>
+                            <input type="hidden" id="hiddenCategory">
+                            <input type="hidden" id="hiddenConfidence">
+                            <input type="hidden" id="hiddenImageUrl">
+                        </div>
+                    </div>
+
+                    <!-- Right: Map & Details -->
+                    <div>
+                        <div class="form-group">
+                            <label>2. Select Pickup Location</label>
+                            <div id="map"></div>
+                            <input type="hidden" id="lat">
+                            <input type="hidden" id="lng">
+                            <small style="color:var(--text-secondary); margin-top:0.5rem; display:block;">Click on map to set location</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Address Details</label>
+                            <textarea id="address" class="form-control" rows="3" placeholder="Full address and landmarks..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Preferred Pickup Date</label>
+                            <input type="datetime-local" id="pickupDate" class="form-control">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%;" id="submitBookingBtn" disabled>
+                            Confirm Booking
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Area -->
+    <div id="notification-area"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="static/js/main.js"></script>
+</body>
+</html>

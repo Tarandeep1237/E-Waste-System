@@ -1,0 +1,11 @@
+Flask
+Flask-Cors
+mysql-connector-python
+PyJWT
+bcrypt
+python-dotenv
+pytest
+tensorflow>=2.20.0
+opencv-python-headless
+Pillow
+numpy
