@@ -100,10 +100,13 @@ function renderBookingsTable(bookings) {
             <td><span class="badge ${b.status}">${b.status}</span></td>
             <td><span class="badge ${b.status === 'collected' ? 'collected' : 'pending'}">${b.status === 'collected' ? '+' + b.points : b.points + ' (Est.)'}</span></td>
             <td>
-                ${b.status === 'pending' || b.status === 'scheduled' ? `
-                    <button class="btn btn-sm btn-outline" onclick="updateBookingStatus('${b.id}', 'collected')" style="padding:0.2rem 0.5rem; font-size:0.8rem; margin-right:0.5rem;"><i class="fa-solid fa-check"></i> Collect</button>
-                    <button class="btn btn-sm btn-outline" onclick="updateBookingStatus('${b.id}', 'rejected')" style="padding:0.2rem 0.5rem; font-size:0.8rem; border-color:var(--danger); color:var(--danger);"><i class="fa-solid fa-xmark"></i> Reject</button>
-                ` : '-'}
+                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                    ${b.status === 'pending' || b.status === 'scheduled' ? `
+                        <button class="btn btn-sm btn-outline" onclick="updateBookingStatus('${b.id}', 'collected')" style="padding:0.2rem 0.5rem; font-size:0.8rem;"><i class="fa-solid fa-check"></i> Collect</button>
+                        <button class="btn btn-sm btn-outline" onclick="updateBookingStatus('${b.id}', 'rejected')" style="padding:0.2rem 0.5rem; font-size:0.8rem; border-color:var(--danger); color:var(--danger);"><i class="fa-solid fa-xmark"></i> Reject</button>
+                    ` : ''}
+                    <button class="btn btn-sm btn-outline" onclick="deleteBooking('${b.id}')" style="padding:0.2rem 0.5rem; font-size:0.8rem; border-color:var(--danger); color:var(--danger);"><i class="fa-solid fa-trash"></i> Delete</button>
+                </div>
             </td>
         `;
         tbody.appendChild(tr);
@@ -132,5 +135,29 @@ async function updateBookingStatus(id, status) {
         console.error(err);
     }
 }
+
+async function deleteBooking(id) {
+    if (!confirm('Are you sure you want to delete this booking?')) return;
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/bookings/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        if (res.ok) {
+            loadAdminData(); // Refresh everything
+        } else {
+            const data = await res.json();
+            alert(data.error || 'Failed to delete booking');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Error deleting booking');
+    }
+}
+
 
 

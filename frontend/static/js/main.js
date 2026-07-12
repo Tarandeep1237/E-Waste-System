@@ -351,7 +351,7 @@ function updateBookingsTable(bookings) {
 
     tbody.innerHTML = '';
     if (!bookings.length) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No bookings found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No bookings found.</td></tr>';
         return;
     }
 
@@ -365,7 +365,34 @@ function updateBookingsTable(bookings) {
             <td><span class="badge ${b.status}">${b.status}</span></td>
             <td><span class="badge ${b.status === 'collected' ? 'collected' : 'pending'}">${b.status === 'collected' ? '+' + b.points : b.points + ' (Est.)'}</span></td>
             <td>${new Date(b.scheduled_date).toLocaleDateString()}</td>
+            <td>
+                <button class="btn btn-sm btn-outline" onclick="deleteBooking('${b.id}')" style="padding:0.2rem 0.5rem; font-size:0.8rem; border-color:var(--danger); color:var(--danger);"><i class="fa-solid fa-trash"></i> Delete</button>
+            </td>
         `;
         tbody.appendChild(tr);
     });
 }
+
+async function deleteBooking(id) {
+    if (!confirm('Are you sure you want to delete this booking?')) return;
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/bookings/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            showNotification('Booking deleted successfully!', 'success');
+            loadDashboardData(); // Refresh the list and stats
+        } else {
+            showNotification(data.error || 'Failed to delete booking', 'error');
+        }
+    } catch (err) {
+        showNotification('Error deleting booking', 'error');
+    }
+}
+

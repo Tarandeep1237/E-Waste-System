@@ -95,3 +95,38 @@ def history(current_user):
             cursor.close()
             conn.close()
 
+@bookings_bp.route('/<booking_id>', methods=['DELETE'])
+@token_required
+def delete_booking(current_user, booking_id):
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        # Check if booking exists
+        cursor.execute("SELECT user_id, status FROM bookings WHERE id = %s", (booking_id,))
+        booking = cursor.fetchone()
+        
+        if not booking:
+            return jsonify({"error": "Booking not found"}), 404
+            
+        # Admins can delete any booking; users can only delete their own
+        if current_user['role'] != 'admin' and booking['user_id'] != current_user['id']:
+            return jsonify({"error": "Unauthorized"}), 403
+            
+        # Delete booking from database
+        cursor.execute("DELETE FROM bookings WHERE id = %s", (booking_id,))
+        conn.commit()
+        
+        return jsonify({"message": "Booking deleted successfully"}), 200
+        
+    except Exception as e:
+        logger.error(f"Booking deletion error: {e}")
+        return jsonify({"error": "Failed to delete booking"}), 500
+    finally:
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
+
+
+
