@@ -63,11 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropZone = document.getElementById('dropZone');
     const imageInput = document.getElementById('imageInput');
     if (dropZone && imageInput) {
-        dropZone.addEventListener('click', (e) => {
-            if (e.target !== imageInput) {
-                imageInput.value = ''; // Reset input so same file can trigger 'change'
-                imageInput.click();
-            }
+        dropZone.addEventListener('click', () => {
+            imageInput.value = ''; // Reset input so same file can trigger 'change'
+            imageInput.click();
         });
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
         dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));

@@ -114,6 +114,19 @@ def delete_booking(current_user, booking_id):
         if current_user['role'] != 'admin' and booking['user_id'] != current_user['id']:
             return jsonify({"error": "Unauthorized"}), 403
             
+        # Fetch any reward associated with this booking
+        cursor.execute("SELECT points, user_id FROM rewards WHERE booking_id = %s", (booking_id,))
+        reward = cursor.fetchone()
+        
+        if reward:
+            # Revert user points balance
+            cursor.execute(
+                "UPDATE users SET points_balance = GREATEST(0, points_balance - %s) WHERE id = %s",
+                (reward['points'], reward['user_id'])
+            )
+            # Delete reward transaction
+            cursor.execute("DELETE FROM rewards WHERE booking_id = %s", (booking_id,))
+            
         # Delete booking from database
         cursor.execute("DELETE FROM bookings WHERE id = %s", (booking_id,))
         conn.commit()
