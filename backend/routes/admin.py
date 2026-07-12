@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from utils.auth_utils import admin_required
 from database import get_db_connection
 from route_opt.route_opt import nearest_neighbor_tsp
+from utils.rewards_utils import calculate_reward_points
 import uuid
 import logging
 
@@ -32,19 +33,27 @@ def dashboard(current_admin):
         category_rows = cursor.fetchall()
         category_stats = {row['category']: row['count'] for row in category_rows}
         
-        # 3. All Bookings (with User details)
+        # 3. All Bookings (with User details and dynamic/actual rewards)
         cursor.execute('''
             SELECT b.id, b.image_url, b.category, b.confidence_score, b.status, 
                    b.latitude, b.longitude, b.address, b.scheduled_date, 
-                   b.user_id, u.name as user_name, u.email as user_email
+                   b.user_id, u.name as user_name, u.email as user_email,
+                   r.points as points_awarded
             FROM bookings b
             JOIN users u ON b.user_id = u.id
+            LEFT JOIN rewards r ON b.id = r.booking_id
             ORDER BY b.created_at DESC
         ''')
         bookings = cursor.fetchall()
         
         for b in bookings:
             b['scheduled_date'] = b['scheduled_date'].isoformat() if b['scheduled_date'] else None
+            # Set dynamic/actual points
+            if b['points_awarded'] is not None:
+                b['points'] = b['points_awarded']
+            else:
+                b['points'] = calculate_reward_points(b['category'], conn)
+            del b['points_awarded']
 
         return jsonify({
             "stats": {
@@ -109,7 +118,7 @@ def update_booking_status(current_admin, booking_id):
         cursor = conn.cursor(dictionary=True)
         
         # Check current booking
-        cursor.execute("SELECT user_id, status FROM bookings WHERE id = %s", (booking_id,))
+        cursor.execute("SELECT user_id, status, category FROM bookings WHERE id = %s", (booking_id,))
         booking = cursor.fetchone()
         
         if not booking:
@@ -123,14 +132,14 @@ def update_booking_status(current_admin, booking_id):
         
         # If collected, award points
         if new_status == 'collected' and booking['status'] != 'collected':
-            points_to_award = 50  # Arbitrary points calculation
+            points_to_award = calculate_reward_points(booking['category'], conn)
             reward_id = str(uuid.uuid4())
             
             # Insert reward transaction
             cursor.execute('''
                 INSERT INTO rewards (id, user_id, booking_id, points, description)
                 VALUES (%s, %s, %s, %s, %s)
-            ''', (reward_id, booking['user_id'], booking_id, points_to_award, "Points for e-waste collection"))
+            ''', (reward_id, booking['user_id'], booking_id, points_to_award, f"Points for {booking['category']} collection"))
             
             # Update user balance
             cursor.execute('''
@@ -146,3 +155,4 @@ def update_booking_status(current_admin, booking_id):
         if conn and conn.is_connected():
             cursor.close()
             conn.close()
+

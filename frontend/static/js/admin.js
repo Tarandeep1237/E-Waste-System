@@ -98,6 +98,7 @@ function renderBookingsTable(bookings) {
             <td>${b.category} <small>(${(b.confidence_score*100).toFixed(0)}%)</small></td>
             <td>${new Date(b.scheduled_date).toLocaleDateString()}</td>
             <td><span class="badge ${b.status}">${b.status}</span></td>
+            <td><span class="badge ${b.status === 'collected' ? 'collected' : 'pending'}">${b.status === 'collected' ? '+' + b.points : b.points + ' (Est.)'}</span></td>
             <td>
                 ${b.status === 'pending' || b.status === 'scheduled' ? `
                     <button class="btn btn-sm btn-outline" onclick="updateBookingStatus('${b.id}', 'collected')" style="padding:0.2rem 0.5rem; font-size:0.8rem; margin-right:0.5rem;"><i class="fa-solid fa-check"></i> Collect</button>

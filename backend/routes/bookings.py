@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from utils.auth_utils import token_required
 from database import get_db_connection
+from utils.rewards_utils import calculate_reward_points
 import uuid
 import logging
 
@@ -59,18 +60,30 @@ def history(current_user):
         cursor = conn.cursor(dictionary=True)
         
         cursor.execute('''
-            SELECT id, image_url, category, confidence_score, status, latitude, longitude, address, scheduled_date, created_at 
-            FROM bookings 
-            WHERE user_id = %s 
-            ORDER BY created_at DESC
+            SELECT b.id, b.image_url, b.category, b.confidence_score, b.status, 
+                   b.latitude, b.longitude, b.address, b.scheduled_date, b.created_at,
+                   r.points as points_awarded
+            FROM bookings b
+            LEFT JOIN rewards r ON b.id = r.booking_id
+            WHERE b.user_id = %s 
+            ORDER BY b.created_at DESC
         ''', (current_user['id'],))
         
         bookings = cursor.fetchall()
         
-        # Format datetimes for JSON serialization
+        # Format datetimes and calculate dynamic reward points
         for b in bookings:
             b['scheduled_date'] = b['scheduled_date'].isoformat() if b['scheduled_date'] else None
             b['created_at'] = b['created_at'].isoformat() if b['created_at'] else None
+            
+            # If collected, use actual points awarded. Otherwise, calculate estimate based on availability.
+            if b['points_awarded'] is not None:
+                b['points'] = b['points_awarded']
+            else:
+                b['points'] = calculate_reward_points(b['category'], conn)
+                
+            # Clean up temporary field
+            del b['points_awarded']
             
         return jsonify({"bookings": bookings}), 200
         
@@ -81,3 +94,4 @@ def history(current_user):
         if conn and conn.is_connected():
             cursor.close()
             conn.close()
+

@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify
 from utils.auth_utils import token_required
 from utils.upload_utils import save_image_locally, allowed_file
 from ml.infer import predict_ewaste
+from utils.rewards_utils import calculate_reward_points
+from database import get_db_connection
 import logging
 
 logger = logging.getLogger(__name__)
@@ -41,12 +43,27 @@ def predict(current_user):
         if not image_url:
             return jsonify({"error": "Failed to securely store image locally"}), 500
 
+        # 3. Calculate estimated reward
+        conn = None
+        estimated_reward = 50
+        try:
+            conn = get_db_connection()
+            estimated_reward = calculate_reward_points(category, conn)
+        except Exception as db_err:
+            logger.warning(f"Could not connect to database for dynamic reward estimation: {db_err}")
+            estimated_reward = calculate_reward_points(category)
+        finally:
+            if conn and conn.is_connected():
+                conn.close()
+
         return jsonify({
             "category": category,
             "confidence": confidence,
-            "image_url": image_url
+            "image_url": image_url,
+            "estimated_reward": estimated_reward
         }), 200
 
     except Exception as e:
         logger.error(f"Prediction route error: {e}")
         return jsonify({"error": "Internal server error during prediction"}), 500
+

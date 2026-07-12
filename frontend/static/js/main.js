@@ -243,6 +243,7 @@ async function handleImageUpload(file) {
             document.getElementById('aiResult').style.display = 'block';
             document.getElementById('aiCategory').textContent = data.category;
             document.getElementById('aiConfidence').textContent = (data.confidence * 100).toFixed(1);
+            document.getElementById('aiReward').textContent = data.estimated_reward;
             
             // Store hidden values for form submission
             document.getElementById('hiddenCategory').value = data.category;
@@ -350,7 +351,7 @@ function updateBookingsTable(bookings) {
 
     tbody.innerHTML = '';
     if (!bookings.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No bookings found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No bookings found.</td></tr>';
         return;
     }
 
@@ -362,6 +363,7 @@ function updateBookingsTable(bookings) {
             <td>${b.category}</td>
             <td>${(b.confidence_score * 100).toFixed(0)}%</td>
             <td><span class="badge ${b.status}">${b.status}</span></td>
+            <td><span class="badge ${b.status === 'collected' ? 'collected' : 'pending'}">${b.status === 'collected' ? '+' + b.points : b.points + ' (Est.)'}</span></td>
             <td>${new Date(b.scheduled_date).toLocaleDateString()}</td>
         `;
         tbody.appendChild(tr);
