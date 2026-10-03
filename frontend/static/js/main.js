@@ -1,5 +1,12 @@
 // Global Config
-const API_BASE_URL = 'http://localhost:5000/api';
+const getApiBaseUrl = () => {
+    const host = window.location.hostname || 'localhost';
+    if (window.location.port === '5000') {
+        return `${window.location.origin}/api`;
+    }
+    return `http://${host}:5000/api`;
+};
+const API_BASE_URL = getApiBaseUrl();
 
 // Utilities
 function showNotification(msg, type = 'info') {
@@ -182,32 +189,75 @@ function initMap() {
 
     // Default center (e.g., Delhi, India)
     const defaultCenter = [28.6139, 77.2090];
-    map = L.map('map').setView(defaultCenter, 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
+    map = L.map('map', {
+        center: defaultCenter,
+        zoom: 13,
+        zoomControl: true
+    });
+    
+    // High-resolution, full detail OpenStreetMap DE tiles (100% free, no API key, street zoom up to 19)
+    L.tileLayer('https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        subdomains: 'abc',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Click to place marker
+    // Initial marker & set hidden input fields
+    marker = L.marker(defaultCenter, { draggable: true }).addTo(map);
+    document.getElementById('lat').value = defaultCenter[0];
+    document.getElementById('lng').value = defaultCenter[1];
+
+    // Marker drag handler
+    marker.on('dragend', function () {
+        const latlng = marker.getLatLng();
+        document.getElementById('lat').value = latlng.lat;
+        document.getElementById('lng').value = latlng.lng;
+    });
+
+    // Click on map to position marker
     map.on('click', (e) => {
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
         document.getElementById('lat').value = lat;
         document.getElementById('lng').value = lng;
         
-        if(marker) map.removeLayer(marker);
-        marker = L.marker([lat, lng]).addTo(map);
+        if (marker) map.removeLayer(marker);
+        marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+        marker.on('dragend', function () {
+            const pos = marker.getLatLng();
+            document.getElementById('lat').value = pos.lat;
+            document.getElementById('lng').value = pos.lng;
+        });
     });
+
+    // Force map size recalculation after layout unhides / fades in
+    setTimeout(() => {
+        if (map) map.invalidateSize();
+    }, 400);
 
     // Try HTML5 Geolocation
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
             const pos = [position.coords.latitude, position.coords.longitude];
             map.setView(pos, 14);
-            marker = L.marker(pos).addTo(map);
+            if (marker) map.removeLayer(marker);
+            marker = L.marker(pos, { draggable: true }).addTo(map);
             document.getElementById('lat').value = pos[0];
             document.getElementById('lng').value = pos[1];
+            marker.on('dragend', function () {
+                const p = marker.getLatLng();
+                document.getElementById('lat').value = p.lat;
+                document.getElementById('lng').value = p.lng;
+            });
+            setTimeout(() => { if (map) map.invalidateSize(); }, 200);
+        }, () => {
+            // Geolocation fallback handled by defaultCenter
         });
     }
+
+    window.addEventListener('resize', () => {
+        if (map) map.invalidateSize();
+    });
 }
 
 // AI Image Upload & Classification Flow
@@ -222,7 +272,6 @@ async function handleImageUpload(file) {
     // Show Spinner
     document.getElementById('aiSpinner').style.display = 'block';
     document.getElementById('aiResult').style.display = 'none';
-    document.getElementById('submitBookingBtn').disabled = true;
 
     const formData = new FormData();
     formData.append('image', file);
@@ -248,7 +297,6 @@ async function handleImageUpload(file) {
             document.getElementById('hiddenConfidence').value = data.confidence;
             document.getElementById('hiddenImageUrl').value = data.image_url;
             
-            document.getElementById('submitBookingBtn').disabled = false;
             showNotification(`AI detected: ${data.category}`, 'success');
         } else {
             showNotification(data.error || 'Failed to classify image', 'error');
@@ -262,28 +310,43 @@ async function handleImageUpload(file) {
 // Submit Booking
 async function handleBookingSubmit(e) {
     e.preventDefault();
-    
-    const payload = {
-        image_url: document.getElementById('hiddenImageUrl').value,
-        category: document.getElementById('hiddenCategory').value,
-        confidence_score: parseFloat(document.getElementById('hiddenConfidence').value),
-        address: document.getElementById('address').value,
-        latitude: parseFloat(document.getElementById('lat').value),
-        longitude: parseFloat(document.getElementById('lng').value),
-        scheduled_date: document.getElementById('pickupDate').value
-    };
 
-    if (!payload.latitude || !payload.longitude) {
+    const imageUrl = document.getElementById('hiddenImageUrl').value;
+    const category = document.getElementById('hiddenCategory').value;
+    const confidenceScore = parseFloat(document.getElementById('hiddenConfidence').value);
+    const rawDate = document.getElementById('pickupDate').value;
+    const lat = parseFloat(document.getElementById('lat').value);
+    const lng = parseFloat(document.getElementById('lng').value);
+    const address = document.getElementById('address').value;
+
+    if (!imageUrl || !category) {
+        return showNotification('Please upload an e-waste image first for AI classification', 'error');
+    }
+
+    if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
         return showNotification('Please select a pickup location on the map', 'error');
     }
     
-    if (!payload.address || payload.address.trim() === '') {
+    if (!address || address.trim() === '') {
         return showNotification('Please enter your full address', 'error');
     }
     
-    if (!payload.scheduled_date) {
+    if (!rawDate) {
         return showNotification('Please select a preferred pickup date', 'error');
     }
+
+    // Sanitize datetime format for MySQL compatibility
+    const formattedDate = rawDate.replace('T', ' ') + (rawDate.length === 16 ? ':00' : '');
+
+    const payload = {
+        image_url: imageUrl,
+        category: category,
+        confidence_score: isNaN(confidenceScore) ? 0.95 : confidenceScore,
+        address: address.trim(),
+        latitude: lat,
+        longitude: lng,
+        scheduled_date: formattedDate
+    };
 
     try {
         const res = await fetch(`${API_BASE_URL}/bookings/create`, {
@@ -299,10 +362,12 @@ async function handleBookingSubmit(e) {
         if (res.ok) {
             showNotification('Booking scheduled successfully!', 'success');
             document.getElementById('bookingForm').reset();
+            document.getElementById('hiddenImageUrl').value = '';
+            document.getElementById('hiddenCategory').value = '';
+            document.getElementById('hiddenConfidence').value = '';
             document.getElementById('imagePreview').style.display = 'none';
             document.getElementById('aiResult').style.display = 'none';
-            document.getElementById('submitBookingBtn').disabled = true;
-            loadDashboardData(); // Refresh list
+            loadDashboardData(); // Refresh list and stats
         } else {
             showNotification(data.error || 'Failed to book pickup', 'error');
         }
@@ -343,6 +408,13 @@ async function loadDashboardData() {
     }
 }
 
+function getImageUrl(url) {
+    if (!url) return 'https://via.placeholder.com/150';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const host = window.location.hostname || 'localhost';
+    return `http://${host}:5000${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
 function updateBookingsTable(bookings) {
     const tbody = document.getElementById('bookingsTableBody');
     if (!tbody) return;
@@ -354,10 +426,11 @@ function updateBookingsTable(bookings) {
     }
 
     bookings.forEach(b => {
+        const displayImgUrl = getImageUrl(b.image_url);
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>#${b.id.substring(0,6)}</td>
-            <td><img src="${b.image_url}" alt="E-waste preview" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid var(--glass-border);"></td>
+            <td><img src="${displayImgUrl}" alt="E-waste preview" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid var(--glass-border);"></td>
             <td>${b.category}</td>
             <td>${(b.confidence_score * 100).toFixed(0)}%</td>
             <td><span class="badge ${b.status}">${b.status}</span></td>

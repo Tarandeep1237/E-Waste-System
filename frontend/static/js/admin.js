@@ -1,4 +1,11 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const getApiBaseUrl = () => {
+    const host = window.location.hostname || 'localhost';
+    if (window.location.port === '5000') {
+        return `${window.location.origin}/api`;
+    }
+    return `http://${host}:5000/api`;
+};
+const API_BASE_URL = getApiBaseUrl();
 
 document.addEventListener('DOMContentLoaded', () => {
     // Check Admin Auth
@@ -86,15 +93,23 @@ function renderChart(categoryStats) {
 
 
 
+function getImageUrl(url) {
+    if (!url) return 'https://via.placeholder.com/150';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const host = window.location.hostname || 'localhost';
+    return `http://${host}:5000${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
 function renderBookingsTable(bookings) {
     const tbody = document.getElementById('adminBookingsTable');
     tbody.innerHTML = '';
 
     bookings.forEach(b => {
+        const displayImgUrl = getImageUrl(b.image_url);
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${b.user_name || 'User ' + b.user_id.substring(0,4)}</td>
-            <td><img src="${b.image_url}" alt="E-waste" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid var(--glass-border);"></td>
+            <td><img src="${displayImgUrl}" alt="E-waste" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px; border: 1px solid var(--glass-border);"></td>
             <td>${b.category} <small>(${(b.confidence_score*100).toFixed(0)}%)</small></td>
             <td>${new Date(b.scheduled_date).toLocaleDateString()}</td>
             <td><span class="badge ${b.status}">${b.status}</span></td>

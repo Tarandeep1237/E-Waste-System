@@ -1,4 +1,7 @@
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
 import cv2
 import numpy as np
 import logging
@@ -57,10 +60,16 @@ def preprocess_image(image_bytes):
         np_arr = np.frombuffer(image_bytes, np.uint8)
         img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
         
+        if img is None:
+            import io
+            from PIL import Image
+            pil_img = Image.open(io.BytesIO(image_bytes)).convert('RGB')
+            img = np.array(pil_img)[:, :, ::-1]  # RGB to BGR for OpenCV processing
+
         # Check for blur using Laplacian variance
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         blur_score = cv2.Laplacian(gray, cv2.CV_64F).var()
-        is_blurry = blur_score < 50.0  # Threshold
+        is_blurry = blur_score < 25.0  # Safe threshold for blur check
         
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, (224, 224))

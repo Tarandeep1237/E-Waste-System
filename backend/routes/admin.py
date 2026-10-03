@@ -47,7 +47,7 @@ def dashboard(current_admin):
         bookings = cursor.fetchall()
         
         for b in bookings:
-            b['scheduled_date'] = b['scheduled_date'].isoformat() if b['scheduled_date'] else None
+            b['scheduled_date'] = b['scheduled_date'].isoformat() if hasattr(b['scheduled_date'], 'isoformat') else str(b['scheduled_date']) if b['scheduled_date'] else None
             # Set dynamic/actual points
             if b['points_awarded'] is not None:
                 b['points'] = b['points_awarded']

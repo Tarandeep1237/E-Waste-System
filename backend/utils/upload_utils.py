@@ -27,8 +27,8 @@ def save_image_locally(file, user_id):
             
             file.save(filepath)
             
-            # Return URL path (served by Flask app)
-            return f"http://localhost:5000/uploads/{filename}"
+            # Return relative URL path (served by Flask app)
+            return f"/uploads/{filename}"
         return None
     except Exception as e:
         logger.error(f"Error saving image locally: {e}")

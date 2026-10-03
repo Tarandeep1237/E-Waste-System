@@ -73,8 +73,8 @@ def history(current_user):
         
         # Format datetimes and calculate dynamic reward points
         for b in bookings:
-            b['scheduled_date'] = b['scheduled_date'].isoformat() if b['scheduled_date'] else None
-            b['created_at'] = b['created_at'].isoformat() if b['created_at'] else None
+            b['scheduled_date'] = b['scheduled_date'].isoformat() if hasattr(b['scheduled_date'], 'isoformat') else str(b['scheduled_date']) if b['scheduled_date'] else None
+            b['created_at'] = b['created_at'].isoformat() if hasattr(b['created_at'], 'isoformat') else str(b['created_at']) if b['created_at'] else None
             
             # If collected, use actual points awarded. Otherwise, calculate estimate based on availability.
             if b['points_awarded'] is not None:

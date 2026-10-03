@@ -19,7 +19,7 @@ class Config:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB limit
     
     # Allowed Extensions for ML Pipeline
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp', 'bmp', 'gif', 'jfif'}
     
     # App Settings
     DEBUG = os.environ.get('FLASK_DEBUG', 'True') == 'True'
