@@ -266,11 +266,7 @@ Alternatively, use the Live Server Extension in VS Code.
 - Advanced AI waste suggestions.
 - QR-based reward system.
 
-## 9. License
-
-This project is licensed under the MIT License.
-
-## 10. Author
+## 9. Author
 
 **Tarandeep Singh**
 
