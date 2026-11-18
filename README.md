@@ -1,34 +1,33 @@
-# ♻️ EcoAI: AI-Driven E-Waste Collection System
+# EcoAI: AI-Driven E-Waste Collection System
 
-<div align="center">
-### Smart • Sustainable • AI-Powered Recycling
+**Smart, Sustainable, and AI-Powered Recycling**
+
 An intelligent AI-powered platform that simplifies electronic waste collection, classification, scheduling, and route optimization for efficient and eco-friendly recycling.
 
-</div>
-# 📖 Overview
+## 1. Overview
 
 EcoAI is a full-stack AI-driven E-Waste Collection System developed to modernize and simplify electronic waste recycling operations.
 
 The system allows users to:
 
-- Upload images of electronic waste
-- Automatically classify e-waste using Machine Learning
-- Schedule pickup requests
-- Earn eco-reward points for responsible recycling
+- Upload images of electronic waste.
+- Automatically classify e-waste using Machine Learning.
+- Schedule pickup requests.
+- Earn eco-reward points for responsible recycling.
 
 Administrators can efficiently:
 
-- Manage pickup requests
-- Monitor analytics
-- Optimize collection routes
-- Improve recycling operations
+- Manage pickup requests.
+- Monitor analytics.
+- Optimize collection routes.
+- Improve recycling operations.
 
-# ✨ Features
+## 2. Key Features
 
-## 🧠 AI-Based E-Waste Classification
+### 2.1 AI-Based E-Waste Classification
 
-- Upload images of electronic waste
-- TensorFlow model predicts waste category automatically
+- Upload images of electronic waste.
+- TensorFlow model predicts the waste category automatically.
 - Supports classification of:
   - Smartphones
   - Laptops
@@ -36,201 +35,245 @@ Administrators can efficiently:
   - Home Appliances
   - Other E-Waste Items
 
-## 📅 Smart Pickup Scheduling
+### 2.2 Smart Pickup Scheduling
 
-- Easy pickup booking system
-- Schedule pickups based on user convenience
-- Real-time request management
+- Easy pickup booking system.
+- Schedule pickups based on user convenience.
+- Real-time request management.
 
-## 🎁 Eco Reward System
+### 2.3 Eco Reward System
 
-- Users receive eco-points after successful recycling
-- Encourages sustainable waste disposal practices
+- Users receive eco-points after successful recycling.
+- Encourages sustainable waste disposal practices.
 
-## 🔐 Secure Authentication System
+### 2.4 Secure Authentication System
 
-- JWT-based authentication
-- Password encryption using Bcrypt
-- Secure user login and registration
+- JWT-based authentication.
+- Password encryption using Bcrypt.
+- Secure user login and registration.
 
-## 🗺️ Route Optimization
+### 2.5 Route Optimization
 
-- Uses Nearest Neighbor Algorithm
-- Optimizes collection routes for administrators
-- Reduces transportation cost and time
+- Uses the Nearest Neighbor Algorithm.
+- Optimizes collection routes for administrators.
+- Reduces transportation cost and time.
 
-## 📊 Admin Dashboard
+### 2.6 Admin Dashboard
 
-- View booking analytics
-- Manage user requests
-- Approve or reject pickups
-- Monitor recycling activities
+- View booking analytics.
+- Manage user requests.
+- Approve or reject pickups.
+- Monitor recycling activities.
 
-# 🛠️ Tech Stack
+## 3. Technology Stack
 
-## Frontend
+### 3.1 Frontend
 
 | Technology | Purpose |
-|------------|---------|
+|---|---|
 | HTML5 | Structure |
-| CSS3 | Styling & Glassmorphism UI |
-| JavaScript | Client-side Functionality |
-| Chart.js | Analytics Visualization |
-| Leaflet.js | Maps & Location Tracking |
+| CSS3 | Styling and Glassmorphism UI |
+| JavaScript | Client-side functionality |
+| Chart.js | Analytics visualization |
+| Leaflet.js | Maps and location tracking |
 
-## Backend
+### 3.2 Backend
 
 | Technology | Purpose |
-|------------|---------|
-| Flask | REST API Backend |
-| Python | Core Programming Language |
-| MySQL | Database Management |
+|---|---|
+| Flask | REST API backend |
+| Python | Core programming language |
+| MySQL | Database management |
 | JWT | Authentication |
-| Bcrypt | Password Hashing |
+| Bcrypt | Password hashing |
 
-## AI / Machine Learning
+### 3.3 AI and Machine Learning
 
 | Technology | Purpose |
-|------------|---------|
-| TensorFlow | Model Training & Prediction |
-| Keras | Deep Learning API |
-| OpenCV | Image Processing |
-| Pillow | Image Handling |
+|---|---|
+| TensorFlow | Model training and prediction |
+| Keras | Deep learning API |
+| OpenCV | Image processing |
+| Pillow | Image handling |
 
-# 🏗️ System Architecture
+## 4. System Architecture
 
+EcoAI follows a modular architecture that integrates the frontend, Flask backend, Machine Learning model, database, and administrative features.
+
+**System Flow:**
+
+```text
 User Uploads E-Waste Image
-            ↓
+          |
+          v
 Frontend Interface
-            ↓
+          |
+          v
 Flask Backend API
-            ↓
+          |
+          v
 TensorFlow ML Model
-            ↓
+          |
+          v
 Waste Classification
-            ↓
+          |
+          v
 Pickup Scheduling
-            ↓
-Admin Dashboard & Route Optimization
+          |
+          v
+Admin Dashboard and Route Optimization
+```
 
-# 📂 Project Structure
+## 5. Project Structure
 
+```text
 E-Waste-System/
 │
 ├── backend/
-│   ├── ml/                     # Machine Learning models
-│   ├── route_opt/              # Route optimization algorithms
-│   ├── routes/                 # API route definitions
-│   ├── utils/                  # Utility/helper functions
-│   ├── app.py                  # Main Flask application
-│   ├── config.py               # Configuration settings
-│   ├── database.py             # Database connection
-│   └── seed_sample_data.py     # Sample database records
+│   ├── ml/                  # Machine Learning models
+│   ├── route_opt/           # Route optimization algorithms
+│   ├── routes/              # API route definitions
+│   ├── utils/               # Utility and helper functions
+│   ├── app.py               # Main Flask application
+│   ├── config.py            # Configuration settings
+│   ├── database.py          # Database connection
+│   └── seed_sample_data.py  # Sample database records
 │
 ├── frontend/
-│   ├── static/                 # CSS & JavaScript files
-│   ├── admin.html              # Admin dashboard
-│   ├── index.html              # Landing page
-│   └── register.html           # Login/Register page
+│   ├── static/              # CSS and JavaScript files
+│   ├── admin.html           # Admin dashboard
+│   ├── index.html           # Landing page
+│   └── register.html        # Login and registration page
 │
-├── tests/                      # Unit testing
-├── requirements.txt            # Python dependencies
+├── tests/                   # Unit testing
+├── requirements.txt         # Python dependencies
 ├── README.md
 └── .gitignore
+```
 
-# 🚀 Installation & Setup
+## 6. Installation and Setup
 
-## 🔹 Prerequisites
+### 6.1 Prerequisites
 
 Ensure the following software is installed:
+
 - Python 3.8+
 - MySQL Server
 - VS Code (Recommended)
 
-## 🔹 Clone Repository
+### 6.2 Clone Repository
 
-bash
+```bash
 git clone https://github.com/Tarandeep1237/E-Waste-System.git
+
 cd E-Waste-System
+```
 
-## 🔹 Create Virtual Environment
-bash
+### 6.3 Create Virtual Environment
+
+```bash
 python -m venv venv
+```
 
-### Activate Environment
+### 6.4 Activate Environment
 
-#### Windows
-bash
+**Windows:**
+
+```bash
 venv\Scripts\activate
+```
 
-#### Linux / macOS
-bash
+**Linux / macOS:**
+
+```bash
 source venv/bin/activate
+```
 
-## 🔹 Install Dependencies
-bash
+### 6.5 Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-## 🔹 Configure Database
+### 6.6 Configure Database
 
-Create MySQL Database:
-sql
+Create the MySQL database:
+
+```sql
 CREATE DATABASE ewaste_db;
+```
 
-Update database credentials inside:
+Update the database credentials inside:
 
+```text
 backend/config.py
+```
 
 Seed sample data:
 
-bash
+```bash
 cd backend
+
 python seed_sample_data.py
+```
 
-## 🔹 Run Backend Server
+### 6.7 Run Backend Server
 
-bash
+```bash
 python app.py
+```
 
 Backend runs at:
 
+```text
 http://localhost:5000
+```
 
-## 🔹 Run Frontend
+### 6.8 Run Frontend
 
-Open:
+Open the following file in a browser:
+
+```text
 frontend/index.html
-Or use the **Live Server Extension** in VS Code.
+```
 
-# 💻 Application Workflow
+Alternatively, use the Live Server Extension in VS Code.
 
-## 👤 User Side
+## 7. Application Workflow
 
-1. Register/Login
-2. Upload E-Waste Image
-3. AI predicts waste category
-4. Schedule pickup request
-5. Earn eco reward points
+### 7.1 User Side
 
-## 🛡️ Admin Side
+1. Register or log in.
+2. Upload an e-waste image.
+3. AI predicts the waste category.
+4. Schedule a pickup request.
+5. Earn eco-reward points after successful recycling.
 
-1. Login to Admin Dashboard
-2. View pickup requests
-3. Optimize collection routes
-4. Manage users & analytics
-5. Monitor recycling activities
+### 7.2 Admin Side
 
-# 🌱 Future Enhancements
+1. Log in to the Admin Dashboard.
+2. View pickup requests.
+3. Optimize collection routes.
+4. Manage users and analytics.
+5. Monitor recycling activities.
 
-- 📱 Mobile Application Support
-- ☁️ Cloud Deployment using Docker
-- 🔔 Real-Time Pickup Notifications
-- 📍 Live Vehicle Tracking
-- 🤖 Advanced AI Waste Suggestions
-- 🧾 QR-Based Reward System
+## 8. Future Enhancements
 
-# 📝 License
+- Mobile application support.
+- Cloud deployment using Docker.
+- Real-time pickup notifications.
+- Live vehicle tracking.
+- Advanced AI waste suggestions.
+- QR-based reward system.
+
+## 9. License
 
 This project is licensed under the MIT License.
 
-</div>
+## 10. Author
+
+**Tarandeep Singh**
+
+AI/ML Engineering Student
+
+Developed as an AI-driven sustainability project integrating Machine Learning, full-stack development, secure authentication, and route optimization to improve electronic waste collection and recycling operations.
